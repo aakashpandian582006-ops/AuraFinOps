@@ -6,7 +6,7 @@ This script serves as the analytical brain of AuraFinOps. It leverages the Boto3
 to connect to AWS across our primary and secondary regions, analyzing EC2 CPU utilization
 over the past 7 days.
 
-Resources running below a 10% average CPU threshold are flagged as 'Idle Resource Anomalies'.
+Resources running below a 5% average CPU threshold are flagged as 'Idle Resource Anomalies'.
 When an anomaly is detected, the script automatically invokes EC2 modifications to scale
 the instance down, calculating financial savings and writing a comprehensive optimization 
 record directly into our centralized S3 FinOps Data Lake.
@@ -35,7 +35,7 @@ logger = logging.getLogger("AuraFinOps-CostAnalyzer")
 TARGET_REGIONS = ["ap-south-1", "ap-southeast-1"]
 
 # Analytical Thresholds
-CPU_THRESHOLD_PERCENT = 10.0
+CPU_THRESHOLD_PERCENT = 5.0
 ANALYSIS_WINDOW_DAYS = 7
 
 # Financial Baseline (Dollars per Hour)
