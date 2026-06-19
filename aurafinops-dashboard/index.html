@@ -3,503 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraFinOps - Executive Console</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>AuraFinOps // Enterprise Cloud Infrastructure & Cost Control Center</title>
     <style>
-        /* =========================================
-           GLOBAL STYLES & CSS VARIABLES
-           ========================================= */
         :root {
-            --bg-obsidian: #090D1A;
-            --card-glass: #121829;
-            --border-color: #242F4D;
-            --text-primary: #FFFFFF;
+            --bg-main: #0B0F19;
+            --bg-card: #131A2C;
+            --border-color: #1E293B;
+            --accent-blue: #38BDF8;
+            --accent-green: #34D399;
+            --accent-orange: #FB923C;
+            --accent-red: #F87171;
+            --text-primary: #F8FAFC;
             --text-secondary: #94A3B8;
-            --accent-green: #10B981;
-            --accent-amber: #F59E0B;
-            --font-main: 'Inter', sans-serif;
         }
 
-        body {
-            background-color: var(--bg-obsidian);
-            color: var(--text-primary);
-            font-family: var(--font-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* =========================================
-           LAYOUT & CONTAINERS
-           ========================================= */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* =========================================
-           HEADER NAVBAR
-           ========================================= */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
-            background: rgba(18, 24, 41, 0.6);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo-text {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--text-primary);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-        }
-
-        .system-tag {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--accent-green);
-            background: rgba(16, 185, 129, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .system-tag::before {
-            content: '';
-            display: block;
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-green);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-green);
-            animation: pulse 2s infinite;
-        }
-
-        /* =========================================
-           METRIC CARDS (GRID LAYOUT)
-           ========================================= */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .card {
-            background-color: var(--card-glass);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        .card-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .value-green {
-            color: var(--accent-green);
-            text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
-        }
-
-        .badge-warning {
-            display: inline-block;
-            color: var(--accent-amber);
-            background: rgba(245, 158, 11, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .badge-info {
-            display: inline-block;
-            color: var(--text-secondary);
-            background: rgba(36, 47, 77, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            font-weight: 400;
-            font-size: 0.9rem;
-            font-family: monospace;
-        }
-
-        .secure-text {
-            color: var(--accent-green);
-            font-weight: 600;
-            font-family: var(--font-main);
-        }
-
-        /* =========================================
-           DATA TABLE SECTION
-           ========================================= */
-        .section-title {
-            margin-top: 3rem;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            letter-spacing: 1px;
-        }
-
-        .table-container {
-            width: 100%;
-            background-color: var(--card-glass);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            background-color: rgba(36, 47, 77, 0.3);
-            padding: 1rem;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        td {
-            padding: 1.25rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.95rem;
-            transition: all 0.5s ease;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        .table-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: all 0.5s ease;
-        }
-
-        .badge-critical {
-            color: var(--accent-amber);
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .badge-success {
-            color: var(--accent-green);
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .projected-waste {
-            font-weight: 600;
-            color: var(--text-primary);
-            transition: color 0.5s ease;
-        }
-
-        /* =========================================
-           ACTION BUTTON & CONSOLE
-           ========================================= */
-        .actions {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .btn-primary {
-            background: transparent;
-            color: var(--accent-green);
-            font-family: var(--font-main);
-            font-weight: 600;
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-            padding: 1rem 2rem;
-            border: 1px solid var(--accent-green);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
-            text-transform: uppercase;
-        }
-
-        .btn-primary:hover {
-            background: rgba(16, 185, 129, 0.1);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .terminal-console {
-            margin-top: 2rem;
-            background-color: #05070D;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1rem;
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            min-height: 80px;
-            overflow-y: auto;
-        }
-
-        .log-entry {
-            margin-bottom: 0.5rem;
-            opacity: 0;
-            transform: translateY(10px);
-            animation: slideIn 0.5s forwards;
-        }
-
-        .log-entry span.timestamp {
-            color: #5C6A8A;
-        }
-
-        .log-entry span.info {
-            color: #38BDF8;
-        }
-
-        .log-entry span.success {
-            color: var(--accent-green);
-        }
-
-        /* =========================================
-           ANIMATIONS
-           ========================================= */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { bg-main: var(--bg-main); background-color: var(--bg-main); color: var(--text-primary); padding: 2rem; }
         
-        .fade-out-in {
-            animation: fadeOutIn 1s forwards;
-        }
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 2rem; border-bottom: 1px solid var(--border-color); margin-bottom: 2rem; }
+        .logo-area h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.05em; color: var(--text-primary); }
+        .logo-area span { color: var(--accent-blue); }
+        .status-pill { background: rgba(52, 211, 153, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 0.4rem 0.8rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; }
 
-        @keyframes fadeOutIn {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
-        }
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .metric-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px; }
+        .metric-label { font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; tracking: 0.05em; margin-bottom: 0.5rem; }
+        .metric-value { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); }
+        .metric-value.highlight { color: var(--accent-blue); }
+
+        .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; }
+        .panel-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+        td { padding: 1rem 0; border-bottom: 1px solid rgba(30, 41, 59, 0.5); font-size: 0.95rem; }
+        
+        .badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+        .badge-warning { background: rgba(251, 146, 60, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
+        .badge-success { background: rgba(52, 211, 153, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
+
+        .terminal-log { background: #070A12; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; color: #34D399; height: 180px; overflow-y: auto; margin-top: 1rem; }
+
+        .action-btn { width: 100%; background: var(--accent-blue); color: #000; border: none; padding: 1rem; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .action-btn:hover { background: #7DD3FC; transform: translateY(-1px); }
+
+        .feature-list { list-style: none; }
+        .feature-item { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-secondary); }
+        .feature-item strong { color: var(--text-primary); display: block; }
     </style>
 </head>
 <body>
 
-    <!-- Header Section -->
     <header>
-        <div class="logo-text">AURA // AUTONOMOUS FINOPS GUARD</div>
-        <div class="system-tag">ENGAGED // ENFORCING OPTIMIZATION POLICIES</div>
+        <div class="logo-area">
+            <h1>Aura<span>FinOps</span></h1>
+        </div>
+        <div class="status-pill">● DATA LAKE ENGINE ACTIVE</div>
     </header>
 
-    <div class="container">
-        <!-- Top Level Metrics Grid -->
-        <div class="metrics-grid">
-            <!-- Card 1: Savings -->
-            <div class="card">
-                <div class="card-label">Total Annualized Savings</div>
-                <div class="metric-value value-green" id="savings-counter">$14,240.00</div>
-            </div>
-
-            <!-- Card 2: Anomalies -->
-            <div class="card">
-                <div class="card-label">Idle Resource Anomalies</div>
-                <div class="badge-warning" id="anomaly-counter">3 EC2 NODES IDLE</div>
-            </div>
-
-            <!-- Card 3: Data Lake -->
-            <div class="card">
-                <div class="card-label">Data Lake Replication</div>
-                <div class="badge-info">s3://aurafinops-global-cost-lake // <span class="secure-text">SECURE</span></div>
-            </div>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Total Annualized Savings</div>
+            <div class="metric-value highlight" id="master-savings">$14,240.00</div>
         </div>
+        <div class="metric-card">
+            <div class="metric-label">Active Cloud Infrastructure</div>
+            <div class="metric-value">Multi-Region AWS</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">FinOps Compliance Security</div>
+            <div class="metric-value" style="color: var(--accent-green);">AES-256 Enabled</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Data Lake Architecture</div>
+            <div class="metric-value">AWS S3 Centralized</div>
+        </div>
+    </div>
 
-        <!-- Active Targets Section -->
-        <div class="section-title">ACTIVE OPTIMIZATION TARGETS</div>
-        
-        <div class="table-container">
+    <div class="dashboard-layout">
+        <div class="panel">
+            <div class="panel-title">Active Infrastructure & Cost Optimization Pipeline</div>
             <table>
                 <thead>
                     <tr>
-                        <th>Instance ID</th>
-                        <th>Region</th>
-                        <th>Current Type</th>
-                        <th>Average CPU</th>
-                        <th>Projected Waste</th>
-                        <th>Status</th>
+                        <th>RESOURCE NAME / ID</th>
+                        <th>RESOURCE TYPE</th>
+                        <th>REGION LOCATION</th>
+                        <th>OPTIMIZATION STATUS</th>
+                        <th>WASTE IMPACT</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr id="target-row">
-                        <td style="font-family: monospace; color: #E2E8F0;">i-0abc12345de</td>
-                        <td>ap-south-1 (Mumbai)</td>
-                        <td id="instance-type">t3.medium</td>
-                        <td>4.2%</td>
-                        <td class="projected-waste" id="waste-cell">$29.95/mo</td>
-                        <td>
-                            <span class="table-badge badge-critical" id="status-badge">● CRITICAL IDLE WASTE</span>
-                        </td>
+                    <tr>
+                        <td><code>i-0a8cf21b92e01a</code></td>
+                        <td>EC2 Compute Node</td>
+                        <td>us-east-1 (Primary)</td>
+                        <td><span class="badge badge-warning" id="status-1">IDLE // OVER-PROVISIONED</span></td>
+                        <td><span id="cost-1" style="color: var(--accent-orange); font-weight: 600;">$480.00 / mo</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>aurafinops-global-cost-lake</code></td>
+                        <td>AWS S3 Bucket Storage</td>
+                        <td>us-east-1 (Primary)</td>
+                        <td><span class="badge badge-success">COMPLIANT // SECURE</span></td>
+                        <td><span style="color: var(--text-secondary);">$0.00 Waste</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>billing-metrics-logs</code></td>
+                        <td>AWS CloudWatch Group</td>
+                        <td>us-west-2 (Secondary)</td>
+                        <td><span class="badge badge-success">RETENTION CONFIGURED</span></td>
+                        <td><span style="color: var(--text-secondary);">$0.00 Waste</span></td>
                     </tr>
                 </tbody>
             </table>
+
+            <div class="terminal-log" id="terminal-output">
+[INFO] 2026-06-19 ISO-8601: Initializing multi-region environment configurations...
+[INFO] 2026-06-19 ISO-8601: Primary Region detected as var.primary_region (us-east-1).
+[INFO] 2026-06-19 ISO-8601: Secondary Region detected as var.secondary_region (us-west-2).
+[INFO] 2026-06-19 ISO-8601: S3 Central Data Lake encrypted with AES256 server-side encryption rules.
+[WARN] 2026-06-19 ISO-8601: Idle unoptimized resource tracking active. Awaiting trigger event...
+            </div>
         </div>
 
-        <!-- Action Button Section -->
-        <div class="actions">
-            <button class="btn-primary" id="execute-btn" onclick="executeRealignment()">
-                EXECUTE AUTONOMOUS COST REALIGNMENT
-            </button>
-        </div>
-
-        <!-- Terminal Console -->
-        <div class="terminal-console" id="terminal">
-            <div class="log-entry">
-                <span class="timestamp" id="init-time"></span>
-                <span class="info">[SYSTEM]</span> AuraFinOps console initialized. Waiting for execution command...
+        <div>
+            <button class="action-btn" id="optimize-trigger">Execute Cloud Optimization</button>
+            
+            <div class="panel">
+                <div class="panel-title">Architectural Features</div>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div>
+                            <strong>Terraform Infrastructure as Code (IaC)</strong>
+                            Deploys multi-region cloud topology safely using declarative configurations.
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div>
+                            <strong>Secure Data Governance</strong>
+                            Configures S3 public access blocks and default server-side encryption to protect financial metrics.
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div>
+                            <strong>Python Automation Core</strong>
+                            Utilizes Boto3 processing pipelines to evaluate cloud resource telemetry logs automatically.
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 
-    <!-- =========================================
-         JAVASCRIPT LOGIC
-         ========================================= -->
     <script>
-        // Set initial timestamp for the system init log
-        document.getElementById('init-time').innerText = new Date().toISOString() + " ";
+        document.getElementById('optimize-trigger').addEventListener('click', function() {
+            // Update Status Badge
+            const statusBadge = document.getElementById('status-1');
+            statusBadge.className = 'badge badge-success';
+            statusBadge.innerText = 'ENFORCED // DOWNGRADED TO T3.MICRO';
+            statusBadge.style.transition = "all 0.5s ease";
 
-        function executeRealignment() {
-            // Disable button to prevent double-clicks
-            const btn = document.getElementById('execute-btn');
-            btn.disabled = true;
-            btn.innerText = "EXECUTING REALIGNMENT...";
-            btn.style.borderColor = "#94A3B8";
-            btn.style.color = "#94A3B8";
+            // Update Cost Value
+            document.getElementById('cost-1').innerText = '$0.00 / Optimized';
+            document.getElementById('cost-1').style.color = '#34D399';
 
-            // Grab elements to manipulate
-            const statusBadge = document.getElementById('status-badge');
-            const wasteCell = document.getElementById('waste-cell');
-            const savingsCounter = document.getElementById('savings-counter');
-            const instanceType = document.getElementById('instance-type');
-            const anomalyCounter = document.getElementById('anomaly-counter');
-            const terminal = document.getElementById('terminal');
+            // Change Annualized Master Counter
+            document.getElementById('master-savings').innerText = '$14,640.00';
 
-            // 1. Table status badge transitions to emerald green
-            setTimeout(() => {
-                statusBadge.className = "table-badge badge-success fade-out-in";
-                setTimeout(() => {
-                    statusBadge.innerHTML = "✔ ENFORCED // DOWNGRADED TO T3.MICRO";
-                }, 500); // Change text halfway through the fade out
-
-                // 2. Projected waste fades and drops to 0
-                wasteCell.classList.add("fade-out-in");
-                setTimeout(() => {
-                    wasteCell.innerText = "$0.00 / Optimized";
-                    wasteCell.style.color = "var(--text-secondary)";
-                    instanceType.innerText = "t3.micro";
-                    instanceType.style.color = "var(--accent-green)";
-                }, 500);
-
-            }, 400);
-
-            // 3. Counter increments smoothly
-            setTimeout(() => {
-                animateCounter(14240.00, 14600.00, 1000, savingsCounter);
-                anomalyCounter.innerText = "2 EC2 NODES IDLE";
-            }, 1200);
-
-            // 4. Append terminal log line
-            setTimeout(() => {
-                const timestamp = new Date().toISOString();
-                const logEntry = document.createElement('div');
-                logEntry.className = 'log-entry';
-                logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> <span class="info">[INFO]</span> Serverless optimization routine finished. Boto3 API downscaled instance i-0abc12345de to t3.micro. Cost telemetry log pushed to S3 bucket.`;
-                terminal.appendChild(logEntry);
-                
-                // Scroll to bottom
-                terminal.scrollTop = terminal.scrollHeight;
-
-                // Reset button text
-                btn.innerText = "REALIGNMENT COMPLETE";
-            }, 2000);
-        }
-
-        // Utility function to animate number counters
-        function animateCounter(startVal, endVal, duration, element) {
-            let startTime = null;
-
-            function animation(currentTime) {
-                if (startTime === null) startTime = currentTime;
-                const timeElapsed = currentTime - startTime;
-                const progress = Math.min(timeElapsed / duration, 1);
-                
-                // Easing logic (ease-out cubic)
-                const easeOutProgress = 1 - Math.pow(1 - progress, 3);
-                
-                const currentVal = startVal + (endVal - startVal) * easeOutProgress;
-                
-                // Format as currency
-                element.innerText = "$" + currentVal.toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-
-                if (timeElapsed < duration) {
-                    requestAnimationFrame(animation);
-                }
-            }
-            requestAnimationFrame(animation);
-        }
+            // Append Terminal Log
+            const term = document.getElementById('terminal-output');
+            const timestamp = new Date().toISOString();
+            term.innerHTML += `\n[ACTION] ${timestamp}: Triggering programmatic infrastructure downscaling event...`;
+            term.innerHTML += `\n[SUCCESS] ${timestamp}: Micro-tier downscale completed. Modified resource state captured in Data Lake.`;
+            term.innerHTML += `\n[COMPLIANCE] ${timestamp}: Total Annualized Savings ledger finalized at $14,640.00.`;
+            term.scrollTop = term.scrollHeight;
+        });
     </script>
 </body>
 </html>
