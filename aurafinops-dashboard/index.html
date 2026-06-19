@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraFinOps - Executive Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           GLOBAL STYLES & CSS VARIABLES
+           ========================================= */
+        :root {
+            --bg-obsidian: #090D1A;
+            --card-glass: #121829;
+            --border-color: #242F4D;
+            --text-primary: #FFFFFF;
+            --text-secondary: #94A3B8;
+            --accent-green: #10B981;
+            --accent-amber: #F59E0B;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-obsidian);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           LAYOUT & CONTAINERS
+           ========================================= */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* =========================================
+           HEADER NAVBAR
+           ========================================= */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: rgba(18, 24, 41, 0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .system-tag {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .system-tag::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        /* =========================================
+           METRIC CARDS (GRID LAYOUT)
+           ========================================= */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .value-green {
+            color: var(--accent-green);
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .badge-warning {
+            display: inline-block;
+            color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .badge-info {
+            display: inline-block;
+            color: var(--text-secondary);
+            background: rgba(36, 47, 77, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-weight: 400;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+
+        .secure-text {
+            color: var(--accent-green);
+            font-weight: 600;
+            font-family: var(--font-main);
+        }
+
+        /* =========================================
+           DATA TABLE SECTION
+           ========================================= */
+        .section-title {
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .table-container {
+            width: 100%;
+            background-color: var(--card-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(36, 47, 77, 0.3);
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            transition: all 0.5s ease;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.5s ease;
+        }
+
+        .badge-critical {
+            color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-success {
+            color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .projected-waste {
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: color 0.5s ease;
+        }
+
+        /* =========================================
+           ACTION BUTTON & CONSOLE
+           ========================================= */
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            background: transparent;
+            color: var(--accent-green);
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            padding: 1rem 2rem;
+            border: 1px solid var(--accent-green);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+            text-transform: uppercase;
+        }
+
+        .btn-primary:hover {
+            background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .terminal-console {
+            margin-top: 2rem;
+            background-color: #05070D;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            min-height: 80px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideIn 0.5s forwards;
+        }
+
+        .log-entry span.timestamp {
+            color: #5C6A8A;
+        }
+
+        .log-entry span.info {
+            color: #38BDF8;
+        }
+
+        .log-entry span.success {
+            color: var(--accent-green);
+        }
+
+        /* =========================================
+           ANIMATIONS
+           ========================================= */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-out-in {
+            animation: fadeOutIn 1s forwards;
+        }
+
+        @keyframes fadeOutIn {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="logo-text">AURA // AUTONOMOUS FINOPS GUARD</div>
+        <div class="system-tag">ENGAGED // ENFORCING OPTIMIZATION POLICIES</div>
+    </header>
+
+    <div class="container">
+        <!-- Top Level Metrics Grid -->
+        <div class="metrics-grid">
+            <!-- Card 1: Savings -->
+            <div class="card">
+                <div class="card-label">Total Annualized Savings</div>
+                <div class="metric-value value-green" id="savings-counter">$14,240.00</div>
+            </div>
+
+            <!-- Card 2: Anomalies -->
+            <div class="card">
+                <div class="card-label">Idle Resource Anomalies</div>
+                <div class="badge-warning" id="anomaly-counter">3 EC2 NODES IDLE</div>
+            </div>
+
+            <!-- Card 3: Data Lake -->
+            <div class="card">
+                <div class="card-label">Data Lake Replication</div>
+                <div class="badge-info">s3://aurafinops-global-cost-lake // <span class="secure-text">SECURE</span></div>
+            </div>
+        </div>
+
+        <!-- Active Targets Section -->
+        <div class="section-title">ACTIVE OPTIMIZATION TARGETS</div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Instance ID</th>
+                        <th>Region</th>
+                        <th>Current Type</th>
+                        <th>Average CPU</th>
+                        <th>Projected Waste</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="target-row">
+                        <td style="font-family: monospace; color: #E2E8F0;">i-0abc12345de</td>
+                        <td>ap-south-1 (Mumbai)</td>
+                        <td id="instance-type">t3.medium</td>
+                        <td>4.2%</td>
+                        <td class="projected-waste" id="waste-cell">$29.95/mo</td>
+                        <td>
+                            <span class="table-badge badge-critical" id="status-badge">● CRITICAL IDLE WASTE</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Action Button Section -->
+        <div class="actions">
+            <button class="btn-primary" id="execute-btn" onclick="executeRealignment()">
+                EXECUTE AUTONOMOUS COST REALIGNMENT
+            </button>
+        </div>
+
+        <!-- Terminal Console -->
+        <div class="terminal-console" id="terminal">
+            <div class="log-entry">
+                <span class="timestamp" id="init-time"></span>
+                <span class="info">[SYSTEM]</span> AuraFinOps console initialized. Waiting for execution command...
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         JAVASCRIPT LOGIC
+         ========================================= -->
+    <script>
+        // Set initial timestamp for the system init log
+        document.getElementById('init-time').innerText = new Date().toISOString() + " ";
+
+        function executeRealignment() {
+            // Disable button to prevent double-clicks
+            const btn = document.getElementById('execute-btn');
+            btn.disabled = true;
+            btn.innerText = "EXECUTING REALIGNMENT...";
+            btn.style.borderColor = "#94A3B8";
+            btn.style.color = "#94A3B8";
+
+            // Grab elements to manipulate
+            const statusBadge = document.getElementById('status-badge');
+            const wasteCell = document.getElementById('waste-cell');
+            const savingsCounter = document.getElementById('savings-counter');
+            const instanceType = document.getElementById('instance-type');
+            const anomalyCounter = document.getElementById('anomaly-counter');
+            const terminal = document.getElementById('terminal');
+
+            // 1. Table status badge transitions to emerald green
+            setTimeout(() => {
+                statusBadge.className = "table-badge badge-success fade-out-in";
+                setTimeout(() => {
+                    statusBadge.innerHTML = "✔ ENFORCED // DOWNGRADED TO T3.MICRO";
+                }, 500); // Change text halfway through the fade out
+
+                // 2. Projected waste fades and drops to 0
+                wasteCell.classList.add("fade-out-in");
+                setTimeout(() => {
+                    wasteCell.innerText = "$0.00 / Optimized";
+                    wasteCell.style.color = "var(--text-secondary)";
+                    instanceType.innerText = "t3.micro";
+                    instanceType.style.color = "var(--accent-green)";
+                }, 500);
+
+            }, 400);
+
+            // 3. Counter increments smoothly
+            setTimeout(() => {
+                animateCounter(14240.00, 14600.00, 1000, savingsCounter);
+                anomalyCounter.innerText = "2 EC2 NODES IDLE";
+            }, 1200);
+
+            // 4. Append terminal log line
+            setTimeout(() => {
+                const timestamp = new Date().toISOString();
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> <span class="info">[INFO]</span> Serverless optimization routine finished. Boto3 API downscaled instance i-0abc12345de to t3.micro. Cost telemetry log pushed to S3 bucket.`;
+                terminal.appendChild(logEntry);
+                
+                // Scroll to bottom
+                terminal.scrollTop = terminal.scrollHeight;
+
+                // Reset button text
+                btn.innerText = "REALIGNMENT COMPLETE";
+            }, 2000);
+        }
+
+        // Utility function to animate number counters
+        function animateCounter(startVal, endVal, duration, element) {
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const progress = Math.min(timeElapsed / duration, 1);
+                
+                // Easing logic (ease-out cubic)
+                const easeOutProgress = 1 - Math.pow(1 - progress, 3);
+                
+                const currentVal = startVal + (endVal - startVal) * easeOutProgress;
+                
+                // Format as currency
+                element.innerText = "$" + currentVal.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animation);
+                }
+            }
+            requestAnimationFrame(animation);
+        }
+    </script>
+</body>
+</html>
